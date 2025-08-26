@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ganesh Chaturthi | Ganpati Bappa Morya</title>
+  <meta name="description" content="A beautiful single‑file Ganesh Chaturthi greeting page with animations, wishes, and share button." />
+  <style>
+    :root{
+      --bg:#fff8ea;          /* warm parchment */
+      --fg:#3a2e1f;          /* deep brown text */
+      --accent:#e76f51;      /* vermillion */
+      --accent-2:#e9c46a;    /* marigold */
+      --accent-3:#2a9d8f;    /* green */
+      --glow:#ffb703;        /* diya glow */
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, #fff1d6 0%, var(--bg) 60%);
+      color:var(--fg);
+      overflow-x:hidden;
+    }
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap
+    }
+    .shloka{letter-spacing:.5px;font-weight:700;color:#a33d2e}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid #f0d8a8;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+    .title{font-size:clamp(28px,5vw,56px);line-height:1.05;margin:4px 0 0}
+    .subtitle{margin:6px 0 0;color:#6b4e2f}
+
+    /* Floating marigold petals */
+    .petal{position:fixed;top:-40px;left:0;opacity:.9;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+    @keyframes fall{
+      0%{transform:translate3d(var(--x,0),-10vh,0) rotate(0deg)}
+      100%{transform:translate3d(var(--xend,0),105vh,0) rotate(360deg)}
+    }
+
+    /* Card */
+    .card{background:#fff;border:1px solid #f0d8a8;border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* SVG Ganesha styling */
+    .ganesha{width:100%;max-width:520px;margin:auto;display:block}
+    .halo{filter:drop-shadow(0 0 12px rgba(255,183,3,.65))}
+    .tilak{animation:pulse 2.5s infinite ease-in-out}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+    /* Diyas */
+    .diyas{display:flex;gap:18px;justify-content:center;margin:10px 0 0}
+    .diya{width:70px;height:44px;position:relative;background:linear-gradient(#8d3b19,#5b250f);border-radius:0 0 50% 50%/0 0 100% 100%;box-shadow:inset 0 -8px 18px rgba(0,0,0,.4)}
+    .flame{position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:18px;height:28px;background:radial-gradient(closest-side,var(--glow),#ffa726 60%, transparent 70%);border-radius:50% 50% 50% 50%;animation:flame 1.8s ease-in-out infinite}
+    .flame:after{content:"";position:absolute;inset:-18px;filter:blur(12px);background:radial-gradient(circle,rgba(255,183,3,.45),transparent 70%)}
+    @keyframes flame{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.15)}}
+
+    /* Buttons */
+    .btn{appearance:none;border:1px solid #bf9b6a;background:linear-gradient(#fff,#fff8ec);padding:10px 14px;border-radius:14px;cursor:pointer;font-weight:600;color:#7a532f;box-shadow:0 2px 0 #e7d0a1}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+
+    .wish{font-size:clamp(18px,2.6vw,22px);line-height:1.5;margin:10px 0 0}
+    .mantra{font-size:18px;background:#fff7e3;border:1px dashed #e5c995;border-radius:14px;padding:14px;margin-top:12px}
+
+    /* Footer */
+    footer{margin:26px 0 10px;text-align:center;color:#7a6a55;font-size:14px}
+    .heart{display:inline-block;transform-origin:center;animation:beat 1.6s infinite}
+    @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+    /* Dark mode */
+    .dark{--bg:#0e0a06;--fg:#f7efe1;--accent:#ff8c66;--accent-2:#e0b057;--accent-3:#7dd3c7;--glow:#ffd166;background:#0e0a06;color:var(--fg)}
+    .dark .card{background:#1a140f;border-color:#3a2a1a;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+    .dark .badge{background:#1f1711;border-color:#3a2a1a}
+    .dark .subtitle{color:#e8d9c6}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="badge shloka" aria-label="Shree Ganeshaya Namah">🕉️ श्री गणेशाय नमः</div>
+        <h1 class="title">Ganesh Chaturthi शुभेच्छा! <span aria-hidden="true">🎉</span></h1>
+        <p class="subtitle">Ganpati Bappa Morya! Mangal Murti Morya!</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center">
+        <button class="btn" id="toggleTheme" title="Toggle Day/Night">🌗 Theme</button>
+        <button class="btn" id="shareBtn" title="Share the wishes">🔗 Share</button>
+      </div>
+    </header>
+
+    <main class="grid" role="main">
+      <section class="card" aria-label="Ganesha illustration and diyas">
+        <!-- Minimal, symbolic Ganesha (inline SVG) -->
+        <svg class="ganesha" viewBox="0 0 800 600" role="img" aria-label="Lord Ganesha illustration">
+          <defs>
+            <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffd166"/>
+              <stop offset="60%" stop-color="#ffb703"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+          </defs>
+          <!-- Halo -->
+          <circle class="halo" cx="400" cy="230" r="150" fill="url(#haloGrad)"></circle>
+          <!-- Trunk + head (stylized) -->
+          <path d="M360 160c30-40 90-40 120 0 25 33 10 77-28 96-18 9-27 22-21 36 9 22 7 40-16 48-30 10-60-12-55-44 2-14-9-27-25-36-35-20-49-61-24-94z" fill="#f2c5a8" stroke="#6b4e2f" stroke-width="3"/>
+          <!-- Ears -->
+          <ellipse cx="300" cy="220" rx="60" ry="70" fill="#f2c5a8" stroke="#6b4e2f" stroke-width="3"/>
+          <ellipse cx="500" cy="220" rx="60" ry="70" fill="#f2c5a8" stroke="#6b4e2f" stroke-width="3"/>
+          <!-- Eyes -->
+          <circle cx="380" cy="220" r="6" fill="#3a2e1f"/>
+          <circle cx="430" cy="220" r="6" fill="#3a2e1f"/>
+          <!-- Tilak -->
+          <rect class="tilak" x="402" y="188" width="8" height="24" rx="4" fill="#e63946"/>
+          <!-- Crown -->
+          <path d="M330 155c20-35 120-35 140 0-30 10-110 10-140 0z" fill="#e9c46a" stroke="#7a532f" stroke-width="3"/>
+          <!-- Modak in hand -->
+          <circle cx="520" cy="310" r="14" fill="#f7d18d" stroke="#7a532f" stroke-width="3"/>
+          <path d="M512 306c6-12 20-12 26 0" stroke="#7a532f" stroke-width="3" fill="none"/>
+          <!-- Blessing hand -->
+          <path d="M520 290c16 0 24 8 24 22s-10 22-24 22" stroke="#6b4e2f" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </svg>
+
+        <div class="diyas" aria-hidden="true">
+          <div class="diya"><div class="flame"></div></div>
+          <div class="diya"><div class="flame"></div></div>
+          <div class="diya"><div class="flame"></div></div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Wishes and mantra">
+        <h2 style="margin:0 0 10px; font-size:24px">Warm Wishes ✨</h2>
+        <p class="wish">May Lord Ganesha remove your obstacles and fill your home with <strong>prosperity, wisdom, and joy</strong>. Wishing you and your family a blessed <em>Ganesh Chaturthi</em>! 🙏</p>
+
+        <div class="mantra" aria-label="Sanskrit mantra">
+          <div style="font-weight:700;">वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ ।</div>
+          <div>निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥</div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn" id="ringBell">🔔 Ring Bell</button>
+          <button class="btn" id="addPetals">🌼 More Flowers</button>
+        </div>
+
+        <details style="margin-top:18px">
+          <summary class="btn" style="display:inline-block">📜 Editable Wish (click to edit & copy)</summary>
+          <textarea id="wishText" style="width:100%;height:120px;margin-top:12px;border:1px solid #e6d1a6;border-radius:12px;padding:12px;background:#fff7eb;color:#5c442a">Happy Ganesh Chaturthi! May Vighnaharta bless you with success, good health, and endless happiness. Ganpati Bappa Morya! 🙏🪔</textarea>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" id="copyWish">📋 Copy Wish</button>
+          </div>
+        </details>
+
+        <audio id="bellAudio" preload="auto">
+          <source src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAA" type="audio/mpeg">
+        </audio>
+      </section>
+    </main>
+
+    <footer>
+      Crafted with <span class="heart">💛</span> for Ganesh Chaturthi. Share with family & friends.
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle
+    const toggleBtn = document.getElementById('toggleTheme');
+    toggleBtn.addEventListener('click', ()=>{
+      document.body.classList.toggle('dark');
+      localStorage.setItem('gc_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+    // Init theme from storage / OS
+    (function(){
+      const stored = localStorage.getItem('gc_theme');
+      if(stored==='dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)){
+        document.body.classList.add('dark');
+      }
+    })();
+
+    // Flower petals generator
+    function createPetal(){
+      const petal = document.createElement('div');
+      petal.className = 'petal';
+      const size = Math.random()*18 + 12; // 12-30
+      petal.style.width = size + 'px';
+      petal.style.height = size + 'px';
+      petal.style.left = Math.random()*100 + 'vw';
+      petal.style.setProperty('--x', (Math.random()*40-20) + 'vw');
+      petal.style.setProperty('--xend', (Math.random()*40-20) + 'vw');
+      petal.style.animation = `fall ${8 + Math.random()*6}s linear forwards`;
+      petal.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 5 C70 25 90 45 95 65 C98 80 90 95 75 100 C60 105 40 100 30 90 C20 80 15 60 18 45 C22 28 35 15 50 5Z" fill="#f2a900"/>
+        <circle cx="36" cy="86" r="8" fill="#c76b00"/>
+      </svg>`;
+      document.body.appendChild(petal);
+      setTimeout(()=>petal.remove(), 15000);
+    }
+    let autoPetals = setInterval(createPetal, 800);
+    document.getElementById('addPetals').addEventListener('click', ()=>{
+      for(let i=0;i<12;i++) setTimeout(createPetal, i*120);
+    });
+
+    // Share API
+    const shareBtn = document.getElementById('shareBtn');
+    shareBtn.addEventListener('click', async ()=>{
+      const text = document.getElementById('wishText').value.trim();
+      const shareData = {title:'Ganesh Chaturthi Wishes', text, url: location.href};
+      try{
+        if(navigator.share){ await navigator.share(shareData); }
+        else{
+          await navigator.clipboard.writeText(text + '\n' + location.href);
+          shareBtn.textContent = '✅ Copied!';
+          setTimeout(()=>shareBtn.textContent='🔗 Share',1200);
+        }
+      }catch(e){
+        console.log(e);
+      }
+    });
+
+    // Copy wish
+    document.getElementById('copyWish').addEventListener('click', async ()=>{
+      const text = document.getElementById('wishText').value;
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyWish');
+      btn.textContent = '✅ Copied!';
+      setTimeout(()=>btn.textContent='📋 Copy Wish', 1200);
+    });
+
+    // Bell ring (simple visual + audio if available)
+    const bellBtn = document.getElementById('ringBell');
+    const bellAudio = document.getElementById('bellAudio');
+    bellBtn.addEventListener('click', ()=>{
+      bellBtn.animate([
+        {transform:'rotate(0deg)'},{transform:'rotate(-14deg)'},{transform:'rotate(14deg)'},{transform:'rotate(0deg)'}
+      ], {duration:600, iterations:1, easing:'ease-in-out'});
+      // Audio is a tiny placeholder; users can replace source with their own aarti mp3
+      bellAudio && bellAudio.play().catch(()=>{});
+      for(let i=0;i<10;i++) setTimeout(createPetal, i*80);
+    });
+
+    // Accessibility: reduce motion preference
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      clearInterval(autoPetals);
+    }
+  </script>
+</body>
+</html>
